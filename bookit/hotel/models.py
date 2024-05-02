@@ -92,6 +92,9 @@ class Booking(models.Model):
     STATUS_CHOICES = (
         ('Активно', 'Активно'),
         ('Бронь', 'Бронь'),
+        ('Завершено', 'Завершено'),
+        ('Отменено', 'Отменено'),
+        ('В ожидании', 'В ожидании'),
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Активно')
 
@@ -101,4 +104,3 @@ class Booking(models.Model):
 
     def __str__(self):
         return f'{self.user} - {self.room} - {self.total_price}'
-
