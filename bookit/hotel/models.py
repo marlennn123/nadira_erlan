@@ -10,7 +10,7 @@ class UserProfile(models.Model):
     country = models.CharField(max_length=100, blank=True, null=True)
     photo = models.ImageField(upload_to='images/user/', blank=True, null=True)
     phone_number = models.CharField(max_length=15)
-    email = models.EmailField()
+
 
     def __str__(self):
         return f'{self.first_name} {self.last_name}'
