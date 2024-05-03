@@ -559,4 +559,5 @@ $RECYCLE.BIN/
 
 # Дополнительные файлы и папки, которые вы хотите игнорировать
 #.db_architecture
-errrwf.py
+.errrwf.py
+.db.sqlite3
