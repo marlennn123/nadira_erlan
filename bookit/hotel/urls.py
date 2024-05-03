@@ -4,7 +4,7 @@ from .views import *
 urlpatterns = [
     path('hotel/', HotelViewSets.as_view({'get': 'list', 'post': 'create'}),
          name='hotel_list'),
-    path('hotel/<int:pk>/', HotelViewSets.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
+    path('hotel/<int:pk>/', HotelDetailViewSets.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
          name='hotel_detail'),
     path('room/', RoomViewSets.as_view({'get': 'list', 'post': 'create'}),
          name='room_list'),
@@ -27,8 +27,4 @@ urlpatterns = [
          name='comment_list'),
     path('comment/<int:pk>/', CommentViewSets.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
          name='comment_detail'),
-    path('photo/', PhotoViewSets.as_view({'get': 'list', 'post': 'create'}),
-         name='photo_list'),
-    path('photo/<int:pk>/', PhotoViewSets.as_view({'get': 'retrieve', 'put': 'update', 'delete': 'destroy'}),
-         name='photo_detail'),
 ]

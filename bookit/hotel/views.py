@@ -1,12 +1,18 @@
+from requests import Response
 from rest_framework import viewsets
 from .models import *
 from .serializers import *
+from django.db.models import Avg
 
 
-# Create your views here.
 class HotelViewSets(viewsets.ModelViewSet):
-    queryset = Hotel.objects.all()
+    queryset = Hotel.objects.annotate(rating=Avg('comment__rating'))
     serializer_class = HotelSerializer
+
+
+class HotelDetailViewSets(viewsets.ModelViewSet):
+    queryset = Hotel.objects.annotate(rating=Avg('comment__rating'))
+    serializer_class = HotelDetailSerializer
 
 
 class RoomViewSets(viewsets.ModelViewSet):
@@ -34,6 +40,3 @@ class CommentViewSets(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
 
 
-class PhotoViewSets(viewsets.ModelViewSet):
-    queryset = Photo.objects.all()
-    serializer_class = PhotoSerializer

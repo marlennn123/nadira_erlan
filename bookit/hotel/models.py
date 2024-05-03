@@ -41,7 +41,6 @@ class Hotel(models.Model):
     address = models.CharField(max_length=150)
     city = models.CharField(max_length=20)
     country = models.CharField(max_length=20)
-    rating = models.IntegerField(default=0)
     photos = models.ManyToManyField(Photo, blank=True, related_name='photos')
 
     def __str__(self):
