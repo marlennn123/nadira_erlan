@@ -17,7 +17,7 @@
 *.pyc
 __pycache__/
 local_settings.py
-db.sqlite3
+bookit/db.sqlite3
 db.sqlite3-journal
 media
 
@@ -559,5 +559,4 @@ $RECYCLE.BIN/
 
 # Дополнительные файлы и папки, которые вы хотите игнорировать
 #.db_architecture
-.errrwf.py
-.db.sqlite3
+
