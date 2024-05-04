@@ -1,13 +1,26 @@
-from requests import Response
 from rest_framework import viewsets
 from .models import *
 from .serializers import *
 from django.db.models import Avg
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import SearchFilter, OrderingFilter
+import django_filters
+
+
+class HotelFilter(django_filters.FilterSet):
+    rating = django_filters.NumberFilter(field_name='rating', lookup_expr='lt')
+
+    class Meta:
+        model = Hotel
+        fields = ['country', 'city', 'rating']
 
 
 class HotelViewSets(viewsets.ModelViewSet):
     queryset = Hotel.objects.annotate(rating=Avg('comment__rating'))
     serializer_class = HotelSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_class = HotelFilter
+    ordering_fields = ('rating',)
 
 
 class HotelDetailViewSets(viewsets.ModelViewSet):
@@ -18,11 +31,8 @@ class HotelDetailViewSets(viewsets.ModelViewSet):
 class RoomViewSets(viewsets.ModelViewSet):
     queryset = Room.objects.all()
     serializer_class = RoomSerializer
-
-
-class PhotoRoomViewSets(viewsets.ModelViewSet):
-    queryset = PhotoRoom.objects.all()
-    serializer_class = PhotoRoomSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['room_number',]
 
 
 class BookingViewSets(viewsets.ModelViewSet):

@@ -1,10 +1,9 @@
 from rest_framework import serializers
 from .models import *
-from django.urls import reverse
 
 
 class HotelSerializer(serializers.ModelSerializer):
-    rating = serializers.IntegerField(default=0, read_only=True)
+    rating = serializers.SerializerMethodField()
     photos = serializers.SerializerMethodField()
     characteristics = serializers.SerializerMethodField()
 
@@ -18,6 +17,9 @@ class HotelSerializer(serializers.ModelSerializer):
             return [request.build_absolute_uri(photo.image.url) for photo in obj.photos.all()] if obj.photos.exists() else []
         else:
             return []
+
+    def get_rating(self, obj):
+        return round(obj.rating) if obj.rating is not None else 0
 
     def get_characteristics(self, obj):
         characteristics = obj.characteristics.all()
@@ -50,7 +52,8 @@ class HotelDetailSerializer(serializers.ModelSerializer):
     def get_photos(self, obj):
         request = self.context.get('request')
         if request is not None:
-            return [request.build_absolute_uri(photo.image.url) for photo in obj.photos.all()] if obj.photos.exists() else []
+            return [request.build_absolute_uri(photo.image.url) for photo in obj.photos.all()] if obj.photos.exists() \
+                else []
         else:
             return []
 
@@ -78,9 +81,27 @@ class HotelDetailSerializer(serializers.ModelSerializer):
 
 
 class RoomSerializer(serializers.ModelSerializer):
+    hotel = serializers.SlugRelatedField(slug_field="name", queryset=Hotel.objects.all())
+    photos = serializers.SerializerMethodField()
+    user = serializers.SerializerMethodField()
+
     class Meta:
         model = Room
         fields = '__all__'
+
+    def get_photos(self, obj):
+        request = self.context.get('request')
+        if request is not None:
+            return [request.build_absolute_uri(photo.image.url) for photo in obj.photos.all()] if obj.photos.exists() else []
+        else:
+            return []
+
+    def get_user(self, obj):  # Add this method
+        bookings = obj.bookings.all()
+        if bookings.exists():
+            return ', '.join([str(booking.user) for booking in bookings])
+        else:
+            return "No bookings for this room"
 
 
 class PhotoRoomSerializer(serializers.ModelSerializer):
@@ -90,9 +111,35 @@ class PhotoRoomSerializer(serializers.ModelSerializer):
 
 
 class BookingSerializer(serializers.ModelSerializer):
+    user = serializers.SlugRelatedField(slug_field="first_name", queryset=UserProfile.objects.all())
+    # room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())  # Используем PrimaryKeyRelatedField для комнаты
+    total_price = serializers.SerializerMethodField()
+
     class Meta:
         model = Booking
-        fields = '__all__'
+        fields = ['id', 'user', 'hotel', 'room', 'check_in_date', 'check_out_date', 'status', 'total_price']
+
+    def get_total_price(self, obj):
+        total_price = (obj.check_out_date - obj.check_in_date).days * obj.room.price_per_night
+        return total_price
+
+    def validate(self, data):
+        room = data.get('room')
+        check_in_date = data.get('check_in_date')
+        check_out_date = data.get('check_out_date')
+
+        # Проверяем, не забронирована ли комната на указанные даты
+        existing_bookings = Booking.objects.filter(room=room, status='Активно')
+        conflicting_bookings = existing_bookings.filter(
+            check_in_date__lte=check_out_date,
+            check_out_date__gte=check_in_date
+        )
+        if self.instance:
+            conflicting_bookings = conflicting_bookings.exclude(pk=self.instance.pk)
+        if conflicting_bookings.exists():
+            raise serializers.ValidationError('Эта комната уже забронирована на указанные даты.')
+
+        return data
 
 
 class UserProfileSerializer(serializers.ModelSerializer):

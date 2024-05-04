@@ -1,5 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
+
 
 
 class UserProfile(models.Model):
@@ -84,10 +86,10 @@ class Room(models.Model):
 
 class Booking(models.Model):
     user = models.ForeignKey(UserProfile, on_delete=models.CASCADE)
-    room = models.OneToOneField(Room, on_delete=models.CASCADE)
+    hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='hotels', default=1)
+    room = models.ForeignKey(Room, on_delete=models.CASCADE, related_name='bookings')
     check_in_date = models.DateField()
     check_out_date = models.DateField()
-    total_price = models.DecimalField(max_digits=10, decimal_places=2)
     STATUS_CHOICES = (
         ('Активно', 'Активно'),
         ('Бронь', 'Бронь'),
@@ -97,9 +99,17 @@ class Booking(models.Model):
     )
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Активно')
 
-    def save(self, *args, **kwargs):
-        self.total_price = self.room.price_per_night * (self.check_out_date - self.check_in_date).days
-        super().save(*args, **kwargs)
-
     def __str__(self):
-        return f'{self.user} - {self.room} - {self.total_price}'
+        return f'{self.user} - {self.room}'
+
+    def clean(self):
+        # Проверяем, не забронирована ли комната на указанные даты
+        existing_bookings = Booking.objects.filter(room=self.room, status='Активно')
+        conflicting_bookings = existing_bookings.filter(
+            check_in_date__lte=self.check_out_date,  # Включаем совпадающие даты
+            check_out_date__gte=self.check_in_date
+        )
+        if self.pk:  # Проверяем, это обновление существующего бронирования или новое
+            conflicting_bookings = conflicting_bookings.exclude(pk=self.pk)
+        if conflicting_bookings.exists():
+            raise ValidationError('Эта комната уже забронирована на указанные даты.')
