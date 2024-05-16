@@ -14,7 +14,8 @@ class HotelSerializer(serializers.ModelSerializer):
     def get_photos(self, obj):
         request = self.context.get('request')
         if request is not None:
-            return [request.build_absolute_uri(photo.image.url) for photo in obj.photos.all()] if obj.photos.exists() else []
+            return [request.build_absolute_uri(photo.image.url) for photo in obj.photos.all()] if obj.photos.exists() \
+                else []
         else:
             return []
 
@@ -92,7 +93,8 @@ class RoomSerializer(serializers.ModelSerializer):
     def get_photos(self, obj):
         request = self.context.get('request')
         if request is not None:
-            return [request.build_absolute_uri(photo.image.url) for photo in obj.photos.all()] if obj.photos.exists() else []
+            return [request.build_absolute_uri(photo.image.url) for photo in obj.photos.all()] if obj.photos.exists() \
+                else []
         else:
             return []
 
@@ -112,7 +114,7 @@ class PhotoRoomSerializer(serializers.ModelSerializer):
 
 class BookingSerializer(serializers.ModelSerializer):
     user = serializers.SlugRelatedField(slug_field="first_name", queryset=UserProfile.objects.all())
-    # room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())  # Используем PrimaryKeyRelatedField для комнаты
+    room = serializers.PrimaryKeyRelatedField(queryset=Room.objects.all())  # Используем PrimaryKeyRelatedField для комнаты
     total_price = serializers.SerializerMethodField()
 
     class Meta:
@@ -129,7 +131,10 @@ class BookingSerializer(serializers.ModelSerializer):
         check_out_date = data.get('check_out_date')
 
         # Проверяем, не забронирована ли комната на указанные даты
-        existing_bookings = Booking.objects.filter(room=room, status='Активно')
+        existing_bookings = Booking.objects.filter(
+            room=room,
+            status__in=['Активно', 'Бронь', 'Завершено', 'В ожидании']
+        )
         conflicting_bookings = existing_bookings.filter(
             check_in_date__lte=check_out_date,
             check_out_date__gte=check_in_date
@@ -146,8 +151,3 @@ class UserProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = UserProfile
         fields = '__all__'
-
-
-
-
-

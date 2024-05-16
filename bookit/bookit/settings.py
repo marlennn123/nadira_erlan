@@ -38,14 +38,24 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django.contrib.sites',
     'hotel',
     'rest_framework_swagger',
     'rest_framework',
     'django_filters',
     'drf_yasg',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
+    'allauth.socialaccount.providers.github',
+    'allauth.socialaccount.providers.google',
+    'allauth.socialaccount.providers.linkedin_oauth2',
+    'allauth.socialaccount.providers.instagram',
+    'allauth.socialaccount.providers.facebook',
 ]
 
 MIDDLEWARE = [
+    "allauth.account.middleware.AccountMiddleware",
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -54,7 +64,6 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
-
 ROOT_URLCONF = 'bookit.urls'
 
 TEMPLATES = [
@@ -134,3 +143,43 @@ MEDIA_URL = '/media/'
 REST_FRAMEWORK = {
     'DEFAULT_FILTER_BACKENDS': ['django_filters.rest_framework.DjangoFilterBackend']
 }
+SITE_ID = 1
+
+AUTHENTICATION_BACKENDS = (
+    'django.contrib.auth.backends.ModelBackend',
+    'allauth.account.auth_backends.AuthenticationBackend',
+)
+
+SOCIALACCOUNT_PROVIDERS = {
+    'github': {
+        'SCOPE': ['user:email'],  # Укажите необходимые разрешения
+        'VERIFIED_EMAIL': True,
+        # 'KEY': '2cc0889def36b37f941a',
+        # 'SECRET': '86ca281b3a0ff75bcd474e231d0f90e070afb55a',
+    }
+}
+
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+# ACCOUNT_AUTHENTICATION_METHOD = 'email'
+# ACCOUNT_EMAIL_REQUIRED = True
+
+ACCOUNT_FORMS = {'signup': 'hotel.forms.MyCustomSignupForm'}
+
+# ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
+# ACCOUNT_USERNAME_MIN_LENGTH = 4
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/room/"
+SIGNUP_REDIRECT_URL = "http://127.0.0.1:8000/room/"
+
+
+EMAIL_HOST = 'smtp.yandex.ru'  # замените на ваш SMTP сервер
+EMAIL_PORT = 465  # замените на ваш SMTP порт
+EMAIL_HOST_USER = 'nadirabegim23@yandex.ru'  # замените на ваш email
+EMAIL_HOST_PASSWORD = 'frlitjplpaqdnrko'  # замените на ваш пароль
+EMAIL_USE_SSL = True
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+SERVER_EMAIL = EMAIL_HOST_USER
+EMAIL_ADMIN = EMAIL_HOST_USER

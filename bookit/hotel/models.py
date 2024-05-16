@@ -3,7 +3,6 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 
 
-
 class UserProfile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     first_name = models.CharField(max_length=50)
@@ -81,7 +80,7 @@ class Room(models.Model):
     photos = models.ManyToManyField(PhotoRoom, blank=True, related_name='photos')
 
     def __str__(self):
-        return f'{self.hotel} - {self.room_number}'
+        return f'{self.hotel} - {self.room_number} - {self.price_per_night}'
 
 
 class Booking(models.Model):
@@ -97,19 +96,19 @@ class Booking(models.Model):
         ('Отменено', 'Отменено'),
         ('В ожидании', 'В ожидании'),
     )
-    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Активно')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='Бронь')
 
     def __str__(self):
         return f'{self.user} - {self.room}'
 
-    def clean(self):
-        # Проверяем, не забронирована ли комната на указанные даты
-        existing_bookings = Booking.objects.filter(room=self.room, status='Активно')
-        conflicting_bookings = existing_bookings.filter(
-            check_in_date__lte=self.check_out_date,  # Включаем совпадающие даты
-            check_out_date__gte=self.check_in_date
-        )
-        if self.pk:  # Проверяем, это обновление существующего бронирования или новое
-            conflicting_bookings = conflicting_bookings.exclude(pk=self.pk)
-        if conflicting_bookings.exists():
-            raise ValidationError('Эта комната уже забронирована на указанные даты.')
+    # def clean(self):
+    #     # Проверяем, не забронирована ли комната на указанные даты
+    #     existing_bookings = Booking.objects.filter(room=self.room, status='Активно')
+    #     conflicting_bookings = existing_bookings.filter(
+    #         check_in_date__lte=self.check_out_date,  # Включаем совпадающие даты
+    #         check_out_date__gte=self.check_in_date
+    #     )
+    #     if self.pk:  # Проверяем, это обновление существующего бронирования или новое
+    #         conflicting_bookings = conflicting_bookings.exclude(pk=self.pk)
+    #     if conflicting_bookings.exists():
+    #         raise ValidationError('Эта комната уже забронирована на указанные даты.')
