@@ -153,9 +153,7 @@ AUTHENTICATION_BACKENDS = (
 SOCIALACCOUNT_PROVIDERS = {
     'github': {
         'SCOPE': ['user:email'],  # Укажите необходимые разрешения
-        'VERIFIED_EMAIL': True,
-        # 'KEY': '2cc0889def36b37f941a',
-        # 'SECRET': '86ca281b3a0ff75bcd474e231d0f90e070afb55a',
+        'VERIFIED_EMAIL': True
     }
 }
 
