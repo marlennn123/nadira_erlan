@@ -174,11 +174,11 @@ LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/room/"
 SIGNUP_REDIRECT_URL = "http://127.0.0.1:8000/room/"
 
 
-EMAIL_HOST = 'smtp.yandex.ru'  # замените на ваш SMTP сервер
-EMAIL_PORT = 465  # замените на ваш SMTP порт
-EMAIL_HOST_USER = 'nadirabegim23@yandex.ru'  # замените на ваш email
-EMAIL_HOST_PASSWORD = 'frlitjplpaqdnrko'  # замените на ваш пароль
-EMAIL_USE_SSL = True
+EMAIL_HOST = config('EMAIL_HOST')  # замените на ваш SMTP сервер
+EMAIL_PORT = config('EMAIL_PORT')  # замените на ваш SMTP порт
+EMAIL_HOST_USER = config('EMAIL_HOST_USER')  # замените на ваш email
+EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')  # замените на ваш пароль
+EMAIL_USE_SSL = config('EMAIL_USE_SSL')
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
