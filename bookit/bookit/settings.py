@@ -21,10 +21,8 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/5.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = config('SECRET_KEY')
-
-# SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = config('DEBUG', cast=bool)
+SECRET_KEY = 'django-insecure-#$ad!bizx72s%edjg2q0yo6^oebdj@xq=3k+y+rixl+c_i0ui1'
+DEBUG = True
 
 ALLOWED_HOSTS = []
 
@@ -172,11 +170,11 @@ LOGIN_REDIRECT_URL = "http://127.0.0.1:8000/room/"
 SIGNUP_REDIRECT_URL = "http://127.0.0.1:8000/room/"
 
 
-EMAIL_HOST = config('EMAIL_HOST')  # замените на ваш SMTP сервер
-EMAIL_PORT = config('EMAIL_PORT')  # замените на ваш SMTP порт
-EMAIL_HOST_USER = config('EMAIL_HOST_USER')  # замените на ваш email
-EMAIL_HOST_PASSWORD = config('EMAIL_HOST_PASSWORD')  # замените на ваш пароль
-EMAIL_USE_SSL = config('EMAIL_USE_SSL')
+EMAIL_HOST = 'smtp.yandex.ru'  # замените на ваш SMTP сервер
+EMAIL_PORT = 465  # замените на ваш SMTP порт
+EMAIL_HOST_USER = 'nadirabegim23@yandex.ru'  # замените на ваш email
+EMAIL_HOST_PASSWORD = 'frlitjplpaqdnrko'  # замените на ваш пароль
+EMAIL_USE_SSL = True
 
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
 SERVER_EMAIL = EMAIL_HOST_USER
